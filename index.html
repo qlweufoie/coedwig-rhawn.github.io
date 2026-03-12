@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>世界观设定</title>
+    <style>
+        /* =========================================
+           1. 基础设置与CSS变量
+           ========================================= */
+        :root {
+            --bg-color: #120c0a; /* 深棕近黑色，泥土底色 */
+            --text-color: #f4f4f0; /* 浅米白/冷白 */
+            --font-main: "Palatino Linotype", "Book Antiqua", Palatino, "Noto Serif SC", "Songti SC", serif; /* 衬线字体 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            /* 隐藏默认滚动条，增强沉浸感 */
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        *::-webkit-scrollbar {
+            display: none; 
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            /* 使用简单的 CSS 噪点背景模拟泥土的微小颗粒感 */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        /* =========================================
+           2. 进入动画 (彩窗与长发树)
+           ========================================= */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 2s ease-in-out, visibility 2s; /* 缓慢消失的过渡效果 */
+        }
+
+        /* 占位图样式，之后请替换 background-image 中的 URL 为您的彩窗图片 */
+        .intro-image {
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(45deg, #2a1b3d, #44318d, #8265a7); /* 占位渐变色 */
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+            /* 您可以通过下面这行引入您的彩窗图片：
+               background-image: url('您的图片路径.jpg'); */
+        }
+
+        /* 动画结束后的隐藏类 */
+        #intro-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* =========================================
+           3. 主体页面结构与布局
+           ========================================= */
+        #main-content {
+            padding-top: 50vh; /* 初始留白，让用户滚动后才看到内容 */
+            padding-bottom: 30vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 200vh; /* 确保页面足够长可以滚动 */
+        }
+
+        /* 树根节点容器 */
+        .root-node {
+            width: 90%;
+            max-width: 800px;
+            margin: 10vh 0;
+            opacity: 0; /* 初始隐藏，等待滚动显现 */
+            transform: translateY(30px);
+            transition: opacity 1.5s ease, transform 1.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 树根滚动进入视口时的类 */
+        .root-node.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 左侧与右侧交错分布 */
+        .root-node.align-left { align-items: flex-start; }
+        .root-node.align-right { align-items: flex-end; }
+
+        /* =========================================
+           4. 树根视觉元素 (可点击区域)
+           ========================================= */
+        .root-graphic {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: filter 0.3s ease;
+        }
+
+        .root-graphic:hover {
+            filter: brightness(1.5); /* 鼠标悬浮时微亮提示 */
+        }
+
+        /* 粗根 (主干) 与细根 (次要) 的占位样式 */
+        /* 实际使用时，您可以将这些 div 替换为 <img> 标签引入真实的树根图片 */
+        .root-line {
+            background-color: #4a3b32; /* 树根颜色 */
+            border-radius: 10px;
+        }
+        .main-root .root-line {
+            width: 150px;
+            height: 8px;
+        }
+        .sub-root .root-line {
+            width: 100px;
+            height: 3px;
+            background-color: #3a2e28;
+        }
+
+        .root-title {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #8c7b6f; /* 暗淡的标题色，不喧宾夺主 */
+        }
+
+        /* =========================================
+           5. 展开的文字内容
+           ========================================= */
+        .root-content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 1s ease, opacity 1s ease, margin-top 0.5s ease;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* 点击展开后的状态 */
+        .root-node.active .root-content {
+            max-height: 1000px; /* 给一个足够大的高度以容纳文字 */
+            opacity: 1;
+            margin-top: 25px;
+        }
+
+        /* 文字排版：呼吸感、克制 */
+        .root-content p {
+            font-size: 1.05rem;
+            line-height: 2.2; /* 宽松的行距 */
+            margin-bottom: 1.5rem;
+            text-align: justify;
+            letter-spacing: 1px;
+            color: var(--text-color);
+            /* 轻微的文字阴影增加一点在深色背景上的发光质感 */
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1); 
+        }
+
+        /* =========================================
+           6. 移动端适配
+           ========================================= */
+        @media (max-width: 768px) {
+            .root-node {
+                align-items: center; /* 手机端居中显示，或者依然保留左右交错，视您喜好而定 */
+            }
+            .root-content p {
+                font-size: 1rem;
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen">
+        <div class="intro-image"></div>
+    </div>
+
+    <div id="main-content">
+        
+        <div class="root-node align-left main-root">
+            <div class="root-graphic" onclick="toggleContent(this)">
+                <div class="root-line"></div>
+                <span class="root-title">世界起源</span>
+            </div>
+            <div class="root-content">
+                <p>在一切开始之前，只有深邃的泥土与无尽的寂静。第一颗种子并非来自天空，而是由大地的悲伤凝结而成。它在黑暗中生根，长出了纠缠的根系，这些根系构成了世界的骨架。</p>
+                <p>神明并未创造这个世界，他们只是从树根的缝隙中爬出的寄生者。</p>
+            </div>
+        </div>
+
+        <div class="root-node align-right sub-root">
+            <div class="root-graphic" onclick="toggleContent(this)">
+                <span class="root-title">旧王纪元</span>
+                <div class="root-line"></div>
+            </div>
+            <div class="root-content">
+                <p>那些被称为旧王的生灵，皮肤如同树皮般坚硬。他们没有语言，依靠根系间的震动传递思想。在漫长的岁月中，他们建立了一座座倒悬于地底的城池。</p>
+                <p>后来，长发树第一次开花，花粉带来了疯狂，也带来了纪元的终结。</p>
+            </div>
+        </div>
+
+        <div class="root-node align-left main-root">
+            <div class="root-graphic" onclick="toggleContent(this)">
+                <div class="root-line"></div>
+                <span class="root-title">深渊之井</span>
+            </div>
+            <div class="root-content">
+                <p>顺着最粗的树根向下，泥土的颜色逐渐变得苍白，仿佛混合了骨灰。这里是深渊之井，没有光，也没有时间的概念。</p>
+                <p>长发树的根须在这里变得如同蛛网般密集，每一次呼吸都能感受到沉重的回音。</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- A. 开场动画逻辑 ---
+        // 页面加载完成后，等待 2.5 秒，然后触发淡出效果
+        window.addEventListener('load', () => {
+            const introScreen = document.getElementById('intro-screen');
+            setTimeout(() => {
+                introScreen.classList.add('fade-out');
+                // 等待淡出动画（2秒）结束后，将其从 DOM 流中移除，避免阻挡点击
+                setTimeout(() => {
+                    introScreen.style.display = 'none';
+                }, 2000);
+            }, 2500); // 停留时间：2.5秒
+        });
+
+        // --- B. 树根滚动显现逻辑 (Intersection Observer) ---
+        // 当树根元素进入浏览器可视区域时，添加 'visible' 类触发 CSS 动画
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.2 // 当树根有 20% 进入视口时触发
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // 如果只希望出现一次，可在此处取消观察： observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.root-node').forEach(node => {
+            observer.observe(node);
+        });
+
+        // --- C. 树根点击展开文字逻辑 ---
+        // 点击 root-graphic 时，给父级元素 root-node 切换 'active' 类
+        function toggleContent(element) {
+            const parentNode = element.closest('.root-node');
+            
+            // 如果您希望每次只展开一个，可以取消注释下面这两行代码：
+            // document.querySelectorAll('.root-node').forEach(node => {
+            //     if(node !== parentNode) node.classList.remove('active');
+            // });
+
+            parentNode.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
