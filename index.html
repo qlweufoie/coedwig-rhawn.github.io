@@ -3,16 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>世界观设定</title>
+    <title>世界观设定 - 沉浸版</title>
     <style>
         /* =========================================
-           1. 基础设置与CSS变量
+           1. 基础设置、CSS变量与字体准备
            ========================================= */
         :root {
-            --bg-color: #120c0a; /* 深棕近黑色，泥土底色 */
-            --text-color: #f4f4f0; /* 浅米白/冷白 */
-            --font-main: "Palatino Linotype", "Book Antiqua", Palatino, "Noto Serif SC", "Songti SC", serif; /* 衬线字体 */
+            /* 基础颜色：深棕近黑，颗粒感更强 */
+            --bg-color: #140d0a; 
+            --text-color: #edebe1; /* 浅米白 */
+            --root-color: #5c4a40; /* 树根颜色，更清晰 */
+            --root-hover-color: #8c7365;
+
+            /* 【文字字体设置】
+               当前使用了一组更具奇幻书卷气的免费 Web 衬线字体作为默认值。
+               如果您找到了喜欢的字体文件（例如 .woff2），请按以下步骤操作：
+               1. 将字体文件放在您的网站目录中。
+               2. 在此处使用 @font-face 定义它（如下方的示例）。
+               3. 将 --font-main 的值修改为您定义的字体名称。
+               例如：
+               @font-face {
+                   font-family: 'MyFantasyFont';
+                   src: url('fonts/MyFantasyFont.woff2') format('woff2');
+                   font-weight: normal;
+                   font-style: normal;
+               }
+               --font-main: 'MyFantasyFont', "EB Garamond", serif;
+            */
+            --font-main: "EB Garamond", Garamond, Georgia, "Noto Serif SC", serif;
+            --content-font-size: 1.1rem;
+            --line-height: 2.3; /* 更宽松的行距，呼吸感 */
         }
+
+        /* 可选：在此定义您加载的字体（如果需要本地文件）
+        @font-face {
+            font-family: 'YourCustomFont';
+            src: url('path/to/your/font.woff2') format('woff2');
+        }
+        */
 
         * {
             box-sizing: border-box;
@@ -31,8 +59,25 @@
             color: var(--text-color);
             font-family: var(--font-main);
             overflow-x: hidden;
-            /* 使用简单的 CSS 噪点背景模拟泥土的微小颗粒感 */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            
+            /* --- 泥土颗粒感与流动感的实现 --- */
+            /* 层 1：细小、静态的噪点底色 */
+            background-image: 
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter1'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter1)' opacity='0.1'/%3E%3C/svg%3E"),
+                /* 层 2：粗大、移动的噪点，提供流动感 */
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.3' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter2)' opacity='0.08'/%3E%3C/svg%3E");
+            background-size: auto, 100% 100%;
+            background-repeat: repeat;
+            background-attachment: fixed;
+            
+            /* 极缓慢的移动动画，模拟深处的流动感 */
+            animation: earthDrift 200s linear infinite; 
+        }
+
+        /* 泥土流动动画定义 */
+        @keyframes earthDrift {
+            from { background-position: 0% 0%, 0% 0%; }
+            to { background-position: 100% 100%, 0% 0%; } /* 只让上层噪声层移动 */
         }
 
         /* =========================================
@@ -49,22 +94,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: opacity 2s ease-in-out, visibility 2s; /* 缓慢消失的过渡效果 */
+            transition: opacity 2s ease-in-out, visibility 2s; /* 缓慢消失 */
         }
 
-        /* 占位图样式，之后请替换 background-image 中的 URL 为您的彩窗图片 */
+        /* 彩窗占位图样式 */
         .intro-image {
             width: 100%;
             height: 100%;
-            background-image: linear-gradient(45deg, #2a1b3d, #44318d, #8265a7); /* 占位渐变色 */
+            background-image: linear-gradient(45deg, #1f142e, #2e1d64, #664d85); /* 占位色 */
             background-size: cover;
             background-position: center;
-            opacity: 0.8;
-            /* 您可以通过下面这行引入您的彩窗图片：
-               background-image: url('您的图片路径.jpg'); */
+            opacity: 0.9;
+            /* 将下方注释去掉并替换图片路径来使用真正的图片：
+               background-image: url('您的彩窗图片.jpg'); */
         }
 
-        /* 动画结束后的隐藏类 */
         #intro-screen.fade-out {
             opacity: 0;
             visibility: hidden;
@@ -74,27 +118,26 @@
            3. 主体页面结构与布局
            ========================================= */
         #main-content {
-            padding-top: 50vh; /* 初始留白，让用户滚动后才看到内容 */
+            padding-top: 55vh; /* 初始留白 */
             padding-bottom: 30vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 200vh; /* 确保页面足够长可以滚动 */
+            min-height: 250vh; /* 确保有足够长的时间可以滚动 */
         }
 
         /* 树根节点容器 */
         .root-node {
             width: 90%;
             max-width: 800px;
-            margin: 10vh 0;
-            opacity: 0; /* 初始隐藏，等待滚动显现 */
-            transform: translateY(30px);
-            transition: opacity 1.5s ease, transform 1.5s ease;
+            margin: 12vh 0;
+            opacity: 0; /* 初始隐藏 */
+            transform: translateY(40px);
+            transition: opacity 1.8s ease, transform 1.8s ease;
             display: flex;
             flex-direction: column;
         }
 
-        /* 树根滚动进入视口时的类 */
         .root-node.visible {
             opacity: 1;
             transform: translateY(0);
@@ -111,34 +154,40 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 15px;
-            transition: filter 0.3s ease;
+            gap: 20px;
+            transition: filter 0.3s ease, transform 0.3s ease;
         }
 
         .root-graphic:hover {
-            filter: brightness(1.5); /* 鼠标悬浮时微亮提示 */
+            filter: brightness(1.3); 
+            transform: scale(1.02); /* 微小放大提示 */
         }
 
-        /* 粗根 (主干) 与细根 (次要) 的占位样式 */
-        /* 实际使用时，您可以将这些 div 替换为 <img> 标签引入真实的树根图片 */
+        /* 树根线条样式 */
         .root-line {
-            background-color: #4a3b32; /* 树根颜色 */
+            background-color: var(--root-color);
             border-radius: 10px;
+            box-shadow: 0 0 10px rgba(92, 74, 64, 0.2);
         }
+        
+        /* 粗根 (主干) */
         .main-root .root-line {
-            width: 150px;
-            height: 8px;
+            width: 180px;
+            height: 9px;
         }
+        
+        /* 细根 (次要) */
         .sub-root .root-line {
-            width: 100px;
-            height: 3px;
-            background-color: #3a2e28;
+            width: 120px;
+            height: 4px;
+            background-color: #40342e; /* 细根颜色稍暗 */
         }
 
         .root-title {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             letter-spacing: 2px;
-            color: #8c7b6f; /* 暗淡的标题色，不喧宾夺主 */
+            color: #a69285;
+            text-shadow: 0 0 5px rgba(166, 146, 133, 0.2);
         }
 
         /* =========================================
@@ -148,39 +197,47 @@
             max-height: 0;
             overflow: hidden;
             opacity: 0;
-            transition: max-height 1s ease, opacity 1s ease, margin-top 0.5s ease;
+            transition: max-height 1.2s ease, opacity 1s ease, margin-top 0.6s ease;
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
         }
 
-        /* 点击展开后的状态 */
         .root-node.active .root-content {
-            max-height: 1000px; /* 给一个足够大的高度以容纳文字 */
+            max-height: 1200px; 
             opacity: 1;
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
         /* 文字排版：呼吸感、克制 */
         .root-content p {
-            font-size: 1.05rem;
-            line-height: 2.2; /* 宽松的行距 */
-            margin-bottom: 1.5rem;
+            font-size: var(--content-font-size);
+            line-height: var(--line-height);
+            margin-bottom: 1.6rem;
             text-align: justify;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             color: var(--text-color);
-            /* 轻微的文字阴影增加一点在深色背景上的发光质感 */
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1); 
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.08); 
         }
 
         /* =========================================
            6. 移动端适配
            ========================================= */
         @media (max-width: 768px) {
-            .root-node {
-                align-items: center; /* 手机端居中显示，或者依然保留左右交错，视您喜好而定 */
+            #main-content {
+                padding-top: 50vh;
             }
+            .root-node {
+                align-items: center; /* 手机端居中显示 */
+                margin: 8vh 0;
+            }
+            .root-graphic {
+                flex-direction: column; /* 图标居上，文字居下 */
+                gap: 10px;
+            }
+            .main-root .root-line { width: 150px; }
+            .sub-root .root-line { width: 100px; }
             .root-content p {
-                font-size: 1rem;
+                font-size: 1.05rem;
                 padding: 0 15px;
             }
         }
@@ -197,33 +254,33 @@
         <div class="root-node align-left main-root">
             <div class="root-graphic" onclick="toggleContent(this)">
                 <div class="root-line"></div>
-                <span class="root-title">世界起源</span>
+                <span class="root-title">起源之悲</span>
             </div>
             <div class="root-content">
-                <p>在一切开始之前，只有深邃的泥土与无尽的寂静。第一颗种子并非来自天空，而是由大地的悲伤凝结而成。它在黑暗中生根，长出了纠缠的根系，这些根系构成了世界的骨架。</p>
+                <p>在一切开始之前，只有深邃的泥土与无尽的寂静。第一颗种子并未接受天空的恩赐，而是由大地的悲伤凝结而成。它在黑暗中生根，长出了纠缠的根系，这些根系构成了世界的骨架。</p>
                 <p>神明并未创造这个世界，他们只是从树根的缝隙中爬出的寄生者。</p>
             </div>
         </div>
 
         <div class="root-node align-right sub-root">
             <div class="root-graphic" onclick="toggleContent(this)">
-                <span class="root-title">旧王纪元</span>
+                <span class="root-title">倒悬城池</span>
                 <div class="root-line"></div>
             </div>
             <div class="root-content">
-                <p>那些被称为旧王的生灵，皮肤如同树皮般坚硬。他们没有语言，依靠根系间的震动传递思想。在漫长的岁月中，他们建立了一座座倒悬于地底的城池。</p>
-                <p>后来，长发树第一次开花，花粉带来了疯狂，也带来了纪元的终结。</p>
+                <p>那些被称为旧王的生灵，皮肤如同树皮般坚硬。依靠根系间的微弱震动，他们建立了无数倒悬于地底的城池。</p>
+                <p>这些城池依靠长发树滴落的汁液为生，那是名为“灰烬之蜜”的苦涩甘露。</p>
             </div>
         </div>
 
         <div class="root-node align-left main-root">
             <div class="root-graphic" onclick="toggleContent(this)">
                 <div class="root-line"></div>
-                <span class="root-title">深渊之井</span>
+                <span class="root-title">深渊蠕动</span>
             </div>
             <div class="root-content">
-                <p>顺着最粗的树根向下，泥土的颜色逐渐变得苍白，仿佛混合了骨灰。这里是深渊之井，没有光，也没有时间的概念。</p>
-                <p>长发树的根须在这里变得如同蛛网般密集，每一次呼吸都能感受到沉重的回音。</p>
+                <p>顺着最粗的树根向下，泥土的颜色逐渐变得苍白，仿佛混合了骨灰。这里是深渊之井，没有光，也没有时间的概念。泥土在这里蠕动，长发树的根须在这里变得如同蛛网般密集，每一次呼吸都能感受到沉重的回音。</p>
+                <p>在此处，您可以听到世界的真相在黑暗中低语。</p>
             </div>
         </div>
 
@@ -231,31 +288,29 @@
 
     <script>
         // --- A. 开场动画逻辑 ---
-        // 页面加载完成后，等待 2.5 秒，然后触发淡出效果
         window.addEventListener('load', () => {
             const introScreen = document.getElementById('intro-screen');
             setTimeout(() => {
                 introScreen.classList.add('fade-out');
-                // 等待淡出动画（2秒）结束后，将其从 DOM 流中移除，避免阻挡点击
+                // 等待淡出动画（2秒）结束后，将移除，避免阻挡点击
                 setTimeout(() => {
                     introScreen.style.display = 'none';
                 }, 2000);
-            }, 2500); // 停留时间：2.5秒
+            }, 2500); // 停留时间
         });
 
         // --- B. 树根滚动显现逻辑 (Intersection Observer) ---
-        // 当树根元素进入浏览器可视区域时，添加 'visible' 类触发 CSS 动画
         const observerOptions = {
             root: null,
             rootMargin: '0px',
-            threshold: 0.2 // 当树根有 20% 进入视口时触发
+            threshold: 0.2 // 触发阈值
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    // 如果只希望出现一次，可在此处取消观察： observer.unobserve(entry.target);
+                    // 如果希望出现一次，可在此处取消观察： observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
@@ -265,7 +320,6 @@
         });
 
         // --- C. 树根点击展开文字逻辑 ---
-        // 点击 root-graphic 时，给父级元素 root-node 切换 'active' 类
         function toggleContent(element) {
             const parentNode = element.closest('.root-node');
             
